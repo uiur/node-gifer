@@ -2,7 +2,7 @@
   "name": "gifer",
   "author": "uiureo",
   "description": "A fast video to gif converter",
-  "version": "0.1",
+  "version": "0.0.1",
   "bin": {
     "gifer": "./bin/gifer"
   },
