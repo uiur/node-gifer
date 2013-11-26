@@ -11,6 +11,8 @@ program
   .usage('[options] input output')
   .option('-d, --delay [delay]', 'delay between frames [auto]', parseInt)
   .option('-r, --rate [rate]', 'frame rate [10]', parseInt)
+  .option('-w, --width [width]', 'max width')
+  .option('-h, --height [height]', 'max height')
   .option('-t, --tmpdir [path]', 'a directory used to put video frames [/tmp/uidxxx/]')
   .parse(process.argv);
 
@@ -28,6 +30,8 @@ if (!output) {
 var options = {
   delay: program.delay,
   rate: program.rate,
+  width: program.width,
+  height: program.height,
   tmpdir: program.tmpdir
 }
 

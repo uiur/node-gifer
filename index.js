@@ -51,7 +51,16 @@ function gifer (input, output, opts, callback) {
   mkdirp(tmpdir, function (err) {
     if (err) return callback(err);
 
-    exec(command(['ffmpeg', '-i', input, '-r', String(rate), tmpdir + '%04d.png']), function (err) {
+    var extract_frames = ['ffmpeg', '-i', input, '-r', String(rate)];
+    if (opts.width || opts.height) {
+      var width = opts.width || -1;
+      var height = opts.height || -1;
+
+      extract_frames.push('-vf', '"scale=' + String(width) + ':' + String(height) + '"');
+    }
+    extract_frames.push(tmpdir + '%04d.png');
+
+    exec(command(extract_frames), function (err) {
       if (err) return finalize(err);
 
       var PARALLEL_THRESHOLD = 20;
