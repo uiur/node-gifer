@@ -39,6 +39,4 @@ var options = {
 
 gifer(input, output, options, function (err) {
   if (err) throw err;
-
-  console.log(output);
 });
