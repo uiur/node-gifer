@@ -20,7 +20,7 @@ function changeExtension(file_path, new_ext) {
   return path.join(path.dirname(file_path), path.basename(file_path, path.extname(file_path)) + new_ext);
 }
 
-function gifer (input, output, opts, callback) {
+function gifer(input, output, opts, callback) {
   if (!input) throw new Error('input required');
   if (!output) throw new Error('output required');
 
@@ -68,7 +68,7 @@ function gifer (input, output, opts, callback) {
     function next(err) {
       if (err) return finalize(err);
 
-      var files = frames.map(function(frame) {
+      var files = frames.map(function (frame) {
         return changeExtension(frame, '.gif');
       });
 
@@ -80,7 +80,7 @@ function gifer (input, output, opts, callback) {
     }
   }
 
-  function gifsicle (files, callback) {
+  function gifsicle(files, callback) {
     exec(command(['gifsicle', '-O2', '--delay', String(delay), '--loop', '--colors 256', files.join(' '), '>', output]), function (err) {
       if (err) return finalize(err);
 
@@ -103,7 +103,7 @@ function gifer (input, output, opts, callback) {
     exec(command(extract_frames), function (err) {
       if (err) return finalize(err);
 
-      var frames = fs.readdirSync(tmpdir).map(function(frame) { return tmpdir + frame });
+      var frames = fs.readdirSync(tmpdir).map(function (frame) { return tmpdir + frame });
       createGIFFromFrames(frames, callback);
     });
   });
