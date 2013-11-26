@@ -2,6 +2,7 @@
 
 var exec = require('child_process').exec
   , path = require('path')
+  , fs = require('fs')
   , mkdirp = require('mkdirp')
   , uid = require('uid2');
 
@@ -40,8 +41,8 @@ function gifer (input, output, opts, callback) {
     });
   }
 
-  function gifsicle (callback) {
-    exec(command(['gifsicle', '-O2', '--delay', String(delay), '--loop', '--colors 256', tmpdir + '*.gif', '>', output]), function (err) {
+  function gifsicle (files, callback) {
+    exec(command(['gifsicle', '-O2', '--delay', String(delay), '--loop', '--colors 256', files, '>', output]), function (err) {
       if (err) return finalize(err);
 
       finalize(null, callback);
@@ -66,17 +67,27 @@ function gifer (input, output, opts, callback) {
       var PARALLEL_THRESHOLD = 20;
 
       countOfFiles(tmpdir + '*.png', function (err, count) {
-        var next = function (err) {
-          if (err) return finalize(err);
-
-          gifsicle(callback);
-        }
-
         if (count > PARALLEL_THRESHOLD) {
           exec(command(['ls', tmpdir + '*.png',
                         '| parallel -N' + String(PARALLEL_THRESHOLD) + '-j +0 gm mogrify -format gif {}']), next);
         } else {
           exec(command(['gm mogrify -format gif', tmpdir + '*.png']), next);
+        }
+
+        function next (err) {
+          if (err) return finalize(err);
+
+          var files = tmpdir + '*.gif';
+
+          if (opts.reverse) {
+            files = fs.readdirSync(tmpdir)
+                    .filter(function(file) { return /\.gif/.test(file) })
+                    .map(function(file) { return tmpdir + file })
+                    .reverse()
+                    .join(' ');
+          }
+
+          gifsicle(files, callback)
         }
       });
     });
