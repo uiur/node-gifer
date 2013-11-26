@@ -1,8 +1,8 @@
 {
   "name": "gifer",
   "author": "uiureo",
-  "description": "Creating gif animations much easier",
-  "version": "0.0.2",
+  "description": "A fast video to gif converter",
+  "version": "0.1",
   "bin": {
     "gifer": "./bin/gifer"
   },
