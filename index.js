@@ -1,6 +1,7 @@
 'use strict';
 
 var exec = require('child_process').exec
+  , path = require('path')
   , mkdirp = require('mkdirp')
   , uid = require('uid2');
 
@@ -24,7 +25,9 @@ function gifer (input, output, opts, callback) {
   var rate = opts.rate || 10
     , delay = opts.delay || 100 / rate;
 
-  var tmpdir = '/tmp/' + uid(10) + '/';
+  var tmpdir = opts.tmpdir
+             ? path.join(opts.tmpdir, '/')
+             : '/tmp/' + uid(10) + '/';
 
   function finalize (err, callback) {
     exec(command(['rm -rf', tmpdir]));

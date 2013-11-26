@@ -11,6 +11,7 @@ program
   .usage('[options] input output')
   .option('-d, --delay [delay]', 'delay between frames [auto]', parseInt)
   .option('-r, --rate [rate]', 'frame rate [10]', parseInt)
+  .option('-t, --tmpdir [path]', 'a directory used to put video frames [/tmp/uidxxx/]')
   .parse(process.argv);
 
 if (program.args.length < 1) {
@@ -26,7 +27,8 @@ if (!output) {
 
 var options = {
   delay: program.delay,
-  rate: program.rate
+  rate: program.rate,
+  tmpdir: program.tmpdir
 }
 
 gifer(input, output, options, function (err) {
