@@ -17,12 +17,12 @@ program
   .option('-t, --tmpdir [path]', 'a directory used to put video frames [/tmp/uidxxx/]')
   .parse(process.argv);
 
-if (program.args.length < 1) {
+if (program.args.length < 2) {
   program.help();
 }
 
-var input = program.args.shift()
-  , output = program.args.shift();
+var output = program.args.pop();
+var input = program.args;
 
 if (!output) {
   output = path.basename(input, path.extname(input)) + '.gif';
