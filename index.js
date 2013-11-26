@@ -31,20 +31,41 @@ function gifer (input, output, opts, callback) {
     callback(err);
   }
 
+  function countOfFiles (path, callback) {
+    exec(command(['ls', path, '| wc -l | awk "{ print $1 }"']), function (err, stdout, stderr) {
+      callback(err, Number(stdout));
+    });
+  }
+
+  function gifsicle (callback) {
+    exec(command(['gifsicle', '-O2', '--delay', String(delay), '--loop', '--colors 256', tmpdir + '*.gif', '>', output]), function (err) {
+      if (err) return finalize(err);
+
+      finalize(null, callback);
+    });
+  }
+
   mkdirp(tmpdir, function (err) {
     if (err) return callback(err);
 
     exec(command(['ffmpeg', '-i', input, '-r', String(rate), tmpdir + '%04d.png']), function (err) {
       if (err) return finalize(err);
 
-      exec(command(['ls', tmpdir + '*.png', '| parallel -N 20 -j +0 gm mogrify -format gif {}']), function (err) {
-        if (err) return finalize(err);
+      var PARALLEL_THRESHOLD = 20;
 
-        exec(command(['gifsicle', '-O2', '--delay', String(delay), '--loop', '--colors 256', tmpdir + '*.gif', '>', output]), function (err) {
+      countOfFiles(tmpdir + '*.png', function (err, count) {
+        var next = function (err) {
           if (err) return finalize(err);
 
-          finalize(null, callback);
-        });
+          gifsicle(callback);
+        }
+
+        if (count > PARALLEL_THRESHOLD) {
+          exec(command(['ls', tmpdir + '*.png',
+                        '| parallel -N' + String(PARALLEL_THRESHOLD) + '-j +0 gm mogrify -format gif {}']), next);
+        } else {
+          exec(command(['gm mogrify -format gif', tmpdir + '*.png']), next);
+        }
       });
     });
   });
