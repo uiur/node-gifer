@@ -37,7 +37,7 @@ function gifer (input, output, opts, callback) {
     exec(command(['ffmpeg', '-i', input, '-r', String(rate), tmpdir + '%04d.png']), function (err) {
       if (err) return finalize(err);
 
-      exec(command(['gm mogrify', '-format', 'gif', tmpdir + '*.png']), function (err) {
+      exec(command(['ls', tmpdir + '*.png', '| parallel -N 20 -j +0 gm mogrify -format gif {}']), function (err) {
         if (err) return finalize(err);
 
         exec(command(['gifsicle', '-O2', '--delay', String(delay), '--loop', '--colors 256', tmpdir + '*.gif', '>', output]), function (err) {
