@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+'use strict';
+
+var program = require('commander')
+  , gifer = require('../index')
+  , path = require('path');
+
+program
+  .usage('[options] input output')
+  .parse(process.argv);
+
+if (program.args.length < 1) {
+  program.help();
+}
+
+var input = program.args.shift()
+  , output = program.args.shift();
+
+if (!output) {
+  output = path.basename(input, path.extname(input)) + '.gif';
+}
+
+gifer(input, output, function (err) {
+  if (err) throw err;
+
+  console.log(output);
+});

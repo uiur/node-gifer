@@ -1,0 +1,13 @@
+{
+  "name": "gifer",
+  "author": "uiureo",
+  "description": "Creating gif animations much easier",
+  "version": "0.0.2",
+  "bin": {
+    "gifer": "./bin/gifer"
+  },
+  "dependencies": {
+    "commander": "2.1.0",
+    "mkdirp": "0.3.5"
+  }
+}
