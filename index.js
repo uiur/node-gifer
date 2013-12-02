@@ -13,7 +13,7 @@ function command(array) {
 }
 
 function isLikeImage(filename) {
-  return /\.(gif|png|jpg|jpeg)$/.test(filename);
+  return (/\.(gif|png|jpg|jpeg)$/i).test(filename);
 }
 
 function changeExtension(file_path, new_ext) {
