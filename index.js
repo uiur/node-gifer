@@ -4,12 +4,13 @@ var exec = require('child_process').exec
   , path = require('path')
   , fs = require('fs')
   , mkdirp = require('mkdirp')
-  , uid = require('uid2');
+  , uid = require('uid2')
+  , shell_escape = require('shell-escape');
 
 module.exports = gifer;
 
 function command(array) {
-  return array.join(' ');
+  return shell_escape(array);
 }
 
 function isLikeImage(filename) {
@@ -51,7 +52,7 @@ function gifer(input, output, opts, callback) {
   }
 
   function finalize(err) {
-    exec(command(['rm -rf', tmpdir]));
+    exec(command(['rm', '-rf', tmpdir]));
     callback(err);
   }
 
@@ -59,10 +60,11 @@ function gifer(input, output, opts, callback) {
     var PARALLEL_THRESHOLD = 20;
 
     if (frames.length > PARALLEL_THRESHOLD) {
-      exec(command(['ls', frames.join(' '),
-                    '| parallel -N' + String(PARALLEL_THRESHOLD) + '-j +0 gm mogrify -format gif {}']), next);
+      exec(command(['ls'].concat(frames)) +
+                    '| parallel -N' + String(PARALLEL_THRESHOLD) +
+                    '-j +0 gm mogrify -format gif {}', next);
     } else {
-      exec(command(['gm mogrify -format gif', frames.join(' ')]), next);
+      exec(command(['gm', 'mogrify', '-format', 'gif'].concat(frames)), next);
     }
 
     function next(err) {
@@ -81,7 +83,11 @@ function gifer(input, output, opts, callback) {
   }
 
   function gifsicle(files, callback) {
-    exec(command(['gifsicle', '-O2', '--delay', String(delay), '--loop', '--colors 256', files.join(' '), '>', output]), function (err) {
+    var gifsicle_command = ['gifsicle', '-O2', '--delay', String(delay), '--loop', '--colors 256'];
+    gifsicle_comand = gifsicle_command.concat(files);
+    gifsicle_command.push('>', output);
+
+    exec(command(gifsicle_command), function (err) {
       if (err) return finalize(err);
 
       finalize(null);
